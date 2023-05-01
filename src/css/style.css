@@ -1,0 +1,107 @@
+* {
+  margin: 0;
+  box-sizing: border-box;
+}
+
+body {
+  background: #eee;
+  text-align: center;
+  padding: 25px;
+}
+
+.container {
+  padding: 3rem;
+  background-color: #ddddd6;
+  border-radius: 0.75rem;
+}
+
+h1 {
+  font-size: 2rem;
+  margin: 0;
+}
+
+.wrapper-hasher {
+  background-color: #ddddd6;
+  border: 1px solid #402525;
+  border-radius: 0.75rem;
+  padding: 3rem;
+  margin-bottom: 1rem;
+}
+
+.wrapper-hasher h2 {
+  text-align: left;
+  margin-bottom:  1rem;
+}
+
+.drop-field {
+  position: relative;
+  min-height: 250px;
+  background-color: #ddddd6;
+  border: 1px solid #402525;
+  border-radius: 0.75rem;
+  padding: 3rem;
+  margin-bottom: 1rem;
+}
+
+.overlapped {
+  position: absolute;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  right: 0;
+  margin: 0;
+  opacity: 0;
+  width: 100%;
+}
+
+.overlap {
+  position: absolute;
+  top: 17%;
+  left: 0;
+  bottom: 0;
+  right: 0;
+  margin: 0;
+  width: 100%;
+  pointer-events: none;
+  font-size: 2.5rem;
+}
+
+.hash-algorithms {
+  display: flex;
+  width: 30%;
+}
+
+.algorithms {
+  margin-left: 10px;
+  border-radius: 15px;
+  text-align: left;
+  list-style-type: none; 
+  border: 1px solid #000; 
+  padding: 10px; 
+}
+
+.algorithm {
+  text-transform: uppercase;
+  min-width: 100px;
+}
+
+.algorithm-checked {
+  text-decoration: underline;
+}
+
+.algorithm-checked::after {
+  content: "\2193"; 
+  margin-left: 5px; 
+}
+
+.calculater-hash {
+  display: flex;
+  margin: auto;
+  flex-direction: column;
+  text-align: left;
+}
+
+.calculated-result {
+  overflow-wrap: break-word;
+  margin-top: 1rem;
+}
