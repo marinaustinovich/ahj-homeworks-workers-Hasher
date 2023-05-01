@@ -6,16 +6,14 @@ const WorkerPlugin = require('worker-plugin'); // eslint-disable-line import/no-
 
 module.exports = {
   target: 'web',
-  output: {
-    path: path.resolve(__dirname, 'dist'),
-    filename: '[name].bundle.js',
-    publicPath: '/',
-    assetModuleFilename: 'assets/[hash][ext][query]',
-    clean: true,
-  },
   entry: {
     main: './src/index.ts',
     worker: './src/ts/web.worker.ts',
+  },
+  output: {
+    path: path.resolve(__dirname, 'dist'),
+    assetModuleFilename: 'assets/[hash][ext][query]',
+    clean: true,
   },
   module: {
     rules: [

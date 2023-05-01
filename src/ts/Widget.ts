@@ -85,7 +85,7 @@ export default class Widget {
     const selectedAlgorithmText = selectedAlgorithm.textContent as string;
     const calculatedResult = this.container.querySelector('.calculated-result') as HTMLSpanElement;
 
-    const worker = new Worker('web.worker.bundle.worker.js');
+    const worker = new Worker('web.worker.worker.js');
     worker.addEventListener('message', (event: MessageEvent) => {
       const result = event.data as string;
       calculatedResult.textContent = result;
