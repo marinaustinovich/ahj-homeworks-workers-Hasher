@@ -11,6 +11,7 @@ module.exports = {
     worker: true,
   },
   extends: 'airbnb-base',
+  parser: '@typescript-eslint/parser',
   overrides: [
     {
       files: ['*.worker.ts'],

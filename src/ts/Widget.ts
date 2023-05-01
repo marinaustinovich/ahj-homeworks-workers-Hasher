@@ -1,6 +1,8 @@
 export default class Widget {
   container: HTMLElement;
+
   algorithms: HTMLElement | null;
+
   file: File | null;
 
   constructor(container: HTMLElement | null) {
@@ -86,7 +88,6 @@ export default class Widget {
     const worker = new Worker('web.worker.bundle.worker.js');
     worker.addEventListener('message', (event: MessageEvent) => {
       const result = event.data as string;
-      console.log(result)
       calculatedResult.textContent = result;
       worker.terminate();
     });
@@ -94,7 +95,7 @@ export default class Widget {
     worker.addEventListener('error', (event) => {
       console.error(event);
     });
-    
+
     worker.postMessage({ selectElText: selectedAlgorithmText.toUpperCase(), data: this.file });
   }
 }

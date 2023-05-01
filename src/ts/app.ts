@@ -1,4 +1,5 @@
-import Widget from "./Widget";
+/* eslint-disable */
+import Widget from './Widget';
 
 /* eslint-disable */
 console.log('it works!');

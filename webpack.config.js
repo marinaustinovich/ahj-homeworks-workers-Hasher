@@ -17,7 +17,7 @@ module.exports = {
   },
   entry: {
     main: './src/index.ts',
-    worker: './src/ts/web.worker.ts',
+    worker: './ts/web.worker.ts',
   },
   module: {
     rules: [
