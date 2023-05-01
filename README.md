@@ -1,5 +1,6 @@
 [![Build status](https://ci.appveyor.com/api/projects/status/c5kmso0um4j0hk4d/branch/main?svg=true)](https://ci.appveyor.com/project/marinaustinovich/ahj-homeworks-workers-hasher/branch/main)
 
+deployment: https://marinaustinovich.github.io/ahj-homeworks-workers-Hasher/
 
 ### Hasher
 
