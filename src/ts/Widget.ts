@@ -1,9 +1,17 @@
+import DOMService from './DOMService';
+import DropArea from './DropArea';
+import HashCalculator from './HashCalculator';
+
 export default class Widget {
-  container: HTMLElement;
+  private dropArea: DropArea | null;
 
-  algorithms: HTMLElement | null;
+  private container: HTMLElement;
 
-  file: File | null;
+  private algorithms: HTMLElement | null;
+
+  private file: File | null;
+
+  private hashCalculator: HashCalculator;
 
   constructor(container: HTMLElement | null) {
     if (!container) {
@@ -13,89 +21,64 @@ export default class Widget {
     this.container = container;
     this.algorithms = null;
     this.file = null;
+    this.dropArea = null;
+    this.hashCalculator = new HashCalculator(this.container);
+  }
+
+  init(): void {
     this.drawUi();
     this.events();
+
+    const dropEl = this.container.querySelector('.drop-field') as HTMLElement;
+    this.dropArea = new DropArea(dropEl, this.handleFileDropped.bind(this));
   }
 
-  drawUi() {
-    this.container.innerHTML = `
-      <div class="wrapper-hasher">
-        <h2>Hasher</h2>
-        <div class="drop-field">
-          <input data-id="file" class="overlapped" type="file">
-          <span data-id="overlap" class="title overlap">Drop files here <br> or <br> Click to select</span>
-        </div>
-        <div class="hash-algorithms">
-          <p>Hash Algorithm: </p>
-          <ul class="algorithms">
-            <li class="algorithm algorithm-checked">MD5</li>
-            <li class="algorithm">sha1</li>
-            <li class="algorithm">sha256</li>
-            <li class="algorithm">sha512</li>
-          </ul>
-        </div>
-      </div>
-      <div class="calculater-hash">
-        <h2>Calculated Hash:</h2>
-        <span class="calculated-result">*************</span>
-      </div>
-    `;
-
-    this.algorithms = document.querySelector('.algorithms');
+  drawUi(): void {
+    const wrapper = DOMService.createWrapper();
+    wrapper.appendChild(DOMService.createTitle());
+    wrapper.appendChild(DOMService.createDropField());
+    wrapper.appendChild(this.createHashAlgorithms());
+    this.container.appendChild(wrapper);
+    this.container.appendChild(DOMService.createCalculatedHashContainer());
   }
 
-  events() {
-    const fileEl = document.querySelector('[data-id=file]');
-    const algorithmElements = document.querySelectorAll('.algorithm');
-    const dropEl = document.querySelector('.drop-field');
-
-    dropEl?.addEventListener('dragover', (evt) => {
-      evt.preventDefault();
-    });
-
-    dropEl?.addEventListener('drop', async (evt: Event) => {
-      evt.preventDefault();
-      const inputElement = evt.currentTarget as HTMLInputElement;
-      if (inputElement.files && inputElement.files.length > 0) {
-        this.file = inputElement.files[0];
-        this.calculateHash();
-      }
-    });
-
-    algorithmElements.forEach((el) => {
-      el.addEventListener('click', () => {
-        const checkedAlgorithm = document.querySelector('.algorithm-checked');
-        checkedAlgorithm?.classList.remove('algorithm-checked');
-        el.classList.toggle('algorithm-checked');
-        this.calculateHash();
-      });
-    });
-
-    fileEl?.addEventListener('change', async () => {
-      const inputElement = fileEl as HTMLInputElement;
-      if (inputElement.files && inputElement.files.length > 0) {
-        this.file = inputElement.files[0];
-        this.calculateHash();
-      }
-    });
+  createHashAlgorithms(): HTMLElement {
+    const hashAlgorithms = DOMService.createHashAlgorithms();
+    this.algorithms = hashAlgorithms.querySelector(
+      '.algorithms',
+    ) as HTMLElement;
+    return hashAlgorithms;
   }
 
-  calculateHash() {
-    const selectedAlgorithm = this.algorithms?.querySelector('.algorithm-checked') as HTMLElement;
-    const selectedAlgorithmText = selectedAlgorithm.textContent as string;
-    const calculatedResult = this.container.querySelector('.calculated-result') as HTMLSpanElement;
+  private handleFileDropped(file: File): void {
+    this.hashCalculator.setFile(file);
+  }
 
-    const worker = new Worker('web.worker.worker.js');
-    worker.addEventListener('message', (event: MessageEvent) => {
-      const result = event.data as string;
-      calculatedResult.textContent = result;
-      worker.terminate();
-    });
+  private onAlgorithmClick(event: Event): void {
+    const target = event.target as HTMLElement;
+    if (target.classList.contains('algorithm')) {
+      this.algorithms
+        ?.querySelector('.algorithm-checked')
+        ?.classList.remove('algorithm-checked');
+      target.classList.add('algorithm-checked');
+      const algorithm = target.textContent?.toUpperCase() || '';
+      this.hashCalculator.setAlgorithm(algorithm);
+    }
+  }
 
-    worker.addEventListener('error', (event) => {
-      console.error(event);
-    });
+  private onFileChange(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    const { files } = input;
+    if (files && files.length > 0) {
+      this.hashCalculator.setFile(files[0]);
+    }
+  }
 
-    worker.postMessage({ selectElText: selectedAlgorithmText.toUpperCase(), data: this.file });
+  events(): void {
+    const fileEl = document.querySelector('[data-id=file]') as HTMLInputElement;
+    const algorithmsEl = document.querySelector('.algorithms');
+
+    algorithmsEl?.addEventListener('click', this.onAlgorithmClick.bind(this));
+    fileEl?.addEventListener('change', this.onFileChange.bind(this));
   }
 }

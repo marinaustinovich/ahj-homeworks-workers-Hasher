@@ -1,4 +1,4 @@
-export interface DataFile {
-    data: File;
-    selectElText: string;
+export interface FileData {
+  data: File;
+  selectElText: string;
 }

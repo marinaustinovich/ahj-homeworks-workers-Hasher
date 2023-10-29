@@ -1,17 +1,19 @@
-const path = require('path');
-const HtmlWebPackPlugin = require('html-webpack-plugin');
-const MiniCssExtractPlugin = require('mini-css-extract-plugin');
-const { CleanWebpackPlugin } = require('clean-webpack-plugin');
-const WorkerPlugin = require('worker-plugin');
+import path from 'path';
+import HtmlWebPackPlugin from 'html-webpack-plugin';
+import MiniCssExtractPlugin from 'mini-css-extract-plugin';
+import { CleanWebpackPlugin } from 'clean-webpack-plugin';
+import WorkerPlugin from 'worker-plugin';
 
-module.exports = {
+const dirname = path.resolve();
+
+const config = {
   target: 'web',
   entry: {
     main: './src/index.ts',
     worker: './src/ts/web.worker.ts',
   },
   output: {
-    path: path.resolve(__dirname, 'dist'),
+    path: path.resolve(dirname, 'dist'),
     assetModuleFilename: 'assets/[hash][ext][query]',
     clean: true,
   },
@@ -72,3 +74,5 @@ module.exports = {
     new WorkerPlugin(),
   ],
 };
+
+export default config;

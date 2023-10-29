@@ -1,41 +1,42 @@
 import crypto from 'crypto-js';
-/* eslint-disable */
-import { DataFile } from './types';
+import { FileData } from './types';
 
-async function hash(file : DataFile) {
-  if (file.data === undefined) {
-    throw new Error('No selected file');
-  }
+async function hash(file: FileData): Promise<string> {
+  const objectURL = URL.createObjectURL(file.data);
+  try {
+    const response = await fetch(objectURL);
+    const arrayBuffer = await response.arrayBuffer();
+    const byteArray = new Uint8Array(arrayBuffer);
+    const wordArrayFromBuffer = crypto.lib.WordArray.create(Array.from(byteArray));
 
-  const response = await fetch(URL.createObjectURL(file.data));
-  const arrayBuffer = await response.arrayBuffer();
-  const byteArray = Array.from(new Uint8Array(arrayBuffer));
-  const wordArray = crypto.lib.WordArray.create(byteArray);
-  let hashValue;
-  switch (file.selectElText) {
-    case 'MD5':
-      hashValue = crypto.MD5(wordArray).toString(crypto.enc.Hex);
-      break;
-    case 'SHA1':
-      hashValue = crypto.SHA1(wordArray).toString(crypto.enc.Hex);
-      break;
-    case 'SHA256':
-      hashValue = crypto.SHA256(wordArray).toString(crypto.enc.Hex);
-      break;
-    case 'SHA512':
-      hashValue = crypto.SHA512(wordArray).toString(crypto.enc.Hex);
-      break;
-    default:
-      hashValue = crypto.SHA512(wordArray).toString(crypto.enc.Hex);
+    const hashFunctions: {
+      [key: string]: (wordArray: any) => crypto.lib.WordArray;
+    } = {
+      MD5: crypto.MD5,
+      SHA1: crypto.SHA1,
+      SHA256: crypto.SHA256,
+      SHA512: crypto.SHA512,
+    };
+
+    const hashFunction = hashFunctions[file.selectElText] || crypto.SHA512;
+    const hashValue = hashFunction(wordArrayFromBuffer).toString(crypto.enc.Hex);
+
+    return hashValue;
+  } finally {
+    URL.revokeObjectURL(objectURL);
   }
-  return hashValue;
 }
-
-self.addEventListener('message', async (event) => {
+// eslint-disable-next-line no-restricted-globals
+self.addEventListener('message', async (event: MessageEvent<FileData>) => {
   try {
     const result = await hash(event.data);
-    self.postMessage(result);
+    // eslint-disable-next-line no-restricted-globals
+    (self as any).postMessage(result);
   } catch (error) {
     console.error(error);
+    // eslint-disable-next-line no-restricted-globals
+    (self as any).postMessage({
+      error: 'An error occurred while calculating the hash.',
+    });
   }
 });
