@@ -51,6 +51,7 @@ export default class Widget {
   }
 
   private handleFileDropped(file: File): void {
+    this.updateImagePreview(file);
     this.hashCalculator.setFile(file);
   }
 
@@ -70,7 +71,37 @@ export default class Widget {
     const input = event.target as HTMLInputElement;
     const { files } = input;
     if (files && files.length > 0) {
+      this.updateImagePreview(files[0]);
       this.hashCalculator.setFile(files[0]);
+    }
+  }
+
+  updateImagePreview(file: File): void {
+    const existingPreview = this.container.querySelector('.image-preview');
+    const existingMessage = this.container.querySelector('.no-preview');
+
+    if (existingPreview) {
+      existingPreview.remove();
+    }
+
+    if (existingMessage) {
+      existingMessage.remove();
+    }
+
+    const fileType = file.type.split('/')[0];
+
+    if (fileType === 'image') {
+      this.container.appendChild(DOMService.createPreview());
+      const reader = new FileReader();
+      reader.onload = (e: ProgressEvent<FileReader>) => {
+        const imagePreview = this.container.querySelector(
+          '.image-preview',
+        ) as HTMLImageElement;
+        imagePreview.src = e.target?.result as string;
+      };
+      reader.readAsDataURL(file);
+    } else {
+      this.container.appendChild(DOMService.createNoPreview());
     }
   }
 

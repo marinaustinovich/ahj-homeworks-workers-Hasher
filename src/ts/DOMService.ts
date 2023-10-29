@@ -49,4 +49,12 @@ export default class DOMService {
   static createWrapper(): HTMLElement {
     return createElement('div', ['wrapper-hasher']);
   }
+
+  static createPreview(): HTMLElement {
+    return createElement('img', ['image-preview']);
+  }
+
+  static createNoPreview(): HTMLElement {
+    return createElement('div', ['no-preview'], 'Предварительный просмотр недоступен');
+  }
 }
